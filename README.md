@@ -1,4 +1,4 @@
-When running on WSL, use GOOS=windows run .
+When running on WSL, use GOOS=windows go run .
 (or just export GOOS=windows)
 
 download the assets at https://pixel-boy.itch.io/ninja-adventure-asset-pack
