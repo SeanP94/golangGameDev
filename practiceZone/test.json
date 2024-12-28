@@ -1,5 +1,17 @@
-{
-    "name" : "Sean Seanson",
-    "age" : 30,
-    "vibe" : 10
-}
+[
+    {
+        "name" : "Sean Seanson",
+        "age" : 30,
+        "vibe" : 10
+    },
+    {
+        "name" : "Perp Burp",
+        "age" : 24,
+        "vibe" : 6
+    },
+    {
+        "name" : "Jake Jakeson",
+        "age" : 100,
+        "vibe" : 2
+    }
+]

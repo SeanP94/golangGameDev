@@ -22,7 +22,7 @@ func main() {
 	var person Person
 	err = json.Unmarshal(json_data, &person)
 	if err != nil {
-		fmt.Println("Error reading JSON:", err)
+		fmt.Println("Error reado JSON:", err)
 		return
 	}
 
