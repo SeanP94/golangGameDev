@@ -4,45 +4,27 @@ import (
 	"image"
 	"image/color"
 	"log"
+	"tutorial/entities"
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/ebitenutil"
 )
 
 // Some globals
-var PIXEL_WITH = 16
+var PIXEL_WIDTH = 16
 var PIXEL_HEIGHT = 16
 
 var WINDOW_WIDTH = 320
 var WINDOW_HEIGHT = 240
 
-type Sprite struct {
-	Img  *ebiten.Image
-	X, Y float64
-}
-
-type Player struct {
-	*Sprite
-	Health uint
-}
-
-type Enemy struct {
-	*Sprite
-	FollowsPlayer bool
-}
-
-type Potion struct {
-	*Sprite
-	AmtHeal uint
-}
-
 // Engine object.
 type Game struct {
-	player      *Player
-	enemies     []*Enemy
-	potions     []*Potion
+	player      *entities.Player
+	enemies     []*entities.Enemy
+	potions     []*entities.Potion
 	tilemapJSON *TilemapJSON
 	tilemapImg  *ebiten.Image
+	cam         *Camera
 }
 
 func (g *Game) Update() error {
@@ -76,6 +58,14 @@ func (g *Game) Update() error {
 		}
 	}
 
+	// Draw Camera with the sprite at the center.
+	g.cam.FollowTarget(g.player.X+(float64(PIXEL_WIDTH)/2), g.player.Y+(float64(PIXEL_HEIGHT)/2), float64(WINDOW_WIDTH), float64(WINDOW_HEIGHT))
+	g.cam.ConstrainCamera(
+		float64(g.tilemapJSON.Layers[0].Width)*float64(PIXEL_WIDTH),
+		float64(g.tilemapJSON.Layers[0].Height)*float64(PIXEL_HEIGHT),
+		float64(WINDOW_HEIGHT),
+		float64(WINDOW_WIDTH))
+
 	return nil
 }
 
@@ -89,16 +79,18 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	for _, layer := range g.tilemapJSON.Layers {
 		for index, id := range layer.Data {
 			// Get location to print to
-			x := (index % layer.Width) * PIXEL_WITH
+			x := (index % layer.Width) * PIXEL_WIDTH
 			y := (index / layer.Width) * PIXEL_HEIGHT
 
-			srcX := ((id - 1) % 22) * PIXEL_WITH   // fix the 22 later, its the width of the tilemap.tsx
+			srcX := ((id - 1) % 22) * PIXEL_WIDTH  // fix the 22 later, its the width of the tilemap.tsx
 			srcY := ((id - 1) / 22) * PIXEL_HEIGHT // Same
 
 			opts.GeoM.Translate(float64(x), float64(y))
 
+			opts.GeoM.Translate(g.cam.X, g.cam.Y)
+
 			screen.DrawImage(
-				g.tilemapImg.SubImage(image.Rect(srcX, srcY, srcX+PIXEL_WITH, srcY+PIXEL_HEIGHT)).(*ebiten.Image),
+				g.tilemapImg.SubImage(image.Rect(srcX, srcY, srcX+PIXEL_WIDTH, srcY+PIXEL_HEIGHT)).(*ebiten.Image),
 				&opts,
 			)
 
@@ -107,6 +99,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	}
 
 	opts.GeoM.Translate(g.player.X, g.player.Y)
+	opts.GeoM.Translate(g.cam.X, g.cam.Y)
 
 	screen.DrawImage(
 		g.player.Img.SubImage(
@@ -120,6 +113,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	for _, sprite := range g.enemies {
 		opts.GeoM.Translate(sprite.X, sprite.Y)
+		opts.GeoM.Translate(g.cam.X, g.cam.Y)
+
 		screen.DrawImage(
 			sprite.Img.SubImage(
 				image.Rect(0, 0, 16, 16),
@@ -132,6 +127,8 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	for _, sprite := range g.potions {
 		opts.GeoM.Translate(sprite.X, sprite.Y)
+		opts.GeoM.Translate(g.cam.X, g.cam.Y)
+
 		screen.DrawImage(
 			sprite.Img.SubImage(
 				image.Rect(0, 0, 16, 16),
@@ -177,52 +174,53 @@ func main() {
 
 	// Construct game obj
 	game := Game{
-		player: &Player{
-			&Sprite{
+		player: &entities.Player{
+			Sprite: &entities.Sprite{
 				Img: playerImg,
 				X:   100,
 				Y:   100,
 			},
-			10,
+			Health: 10,
 		},
-		enemies: []*Enemy{
+		enemies: []*entities.Enemy{
 			{
-				&Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   0,
 					Y:   0,
 				},
-				true,
+				FollowsPlayer: true,
 			},
 			{
-				&Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   200,
 					Y:   0,
 				},
-				true,
+				FollowsPlayer: true,
 			},
 			{
-				&Sprite{
+				Sprite: &entities.Sprite{
 					Img: skeletonImg,
 					X:   300,
 					Y:   0,
 				},
-				false,
+				FollowsPlayer: false,
 			},
 		},
-		potions: []*Potion{
+		potions: []*entities.Potion{
 			{
-				&Sprite{
+				Sprite: &entities.Sprite{
 					Img: potionImg,
 					X:   200,
 					Y:   200,
 				},
-				1,
+				AmtHeal: 1,
 			},
 		},
 		tilemapJSON: tilemapJSON,
 		tilemapImg:  tilemapImg,
+		cam:         NewCamera(0.0, 0.0),
 	}
 
 	if err := ebiten.RunGame(&game); err != nil {
