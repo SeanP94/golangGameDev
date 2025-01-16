@@ -1,30 +1,19 @@
 package main
 
 import (
-	"encoding/json"
 	"fmt"
-	"os"
+	"unsafe"
 )
 
-type Person struct {
-	Name string `json:"name"`
-	Age  int    `json:age`
-	Vibe int    `json:vibe`
+func test(v []float32) {
+	fmt.Println(unsafe.Pointer(&v[0]))
 }
 
 func main() {
-	json_data, err := os.ReadFile("test.json")
-	if err != nil {
-		fmt.Println("Error reading file:", err)
-		return
+	var value float32 = 123
+	t := []*float32{&value}
+	for x := range t {
+		fmt.Println(&x)
+		fmt.Println(x)
 	}
-
-	var person Person
-	err = json.Unmarshal(json_data, &person)
-	if err != nil {
-		fmt.Println("Error reado JSON:", err)
-		return
-	}
-
-	fmt.Printf(`%s is %d years old, with a vibe of %d out of 10.`, person.Name, person.Age, person.Vibe)
 }
