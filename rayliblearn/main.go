@@ -6,8 +6,11 @@ import (
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
+var SCREEN_WIDTH int32 = 800
+var SCREEN_HEIGHT int32 = 800
+
 func main() {
-	rl.InitWindow(400, 400, "Hello Window")
+	rl.InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "Hello Window")
 	rl.SetTargetFPS(60)
 
 	// Canvas for the shader
@@ -17,22 +20,14 @@ func main() {
 	rl.UnloadImage(blank)
 
 	loc := rl.GetShaderLocation(shader, "u_time")
+	loc_size := rl.GetShaderLocationAttrib(shader, "u_resolution")
 
 	currTime := []float32{float32(rl.GetTime())}
-
+	currSize := []float32{float32(SCREEN_WIDTH), float32(SCREEN_HEIGHT)}
 	fmt.Println(loc)
+	fmt.Println(loc_size)
 	rl.SetShaderValue(shader, loc, currTime, rl.ShaderUniformFloat)
-	// red := rl.GetShaderLocation(shader, "re")
-	// green := rl.GetShaderLocation(shader, "gree")
-	// blue := rl.GetShaderLocation(shader, "blu")
-
-	// r := float32(1.0)
-	// g := float32(1.0)
-	// b := float32(1.0)
-
-	// rl.SetShaderValue(shader, red, []float32{r}, rl.ShaderUniformFloat)
-	// rl.SetShaderValue(shader, green, []float32{g}, rl.ShaderUniformFloat)
-	// rl.SetShaderValue(shader, blue, []float32{b}, rl.ShaderUniformFloat)
+	rl.SetShaderValue(shader, loc_size, currSize, rl.ShaderUniformVec2)
 
 	for !rl.WindowShouldClose() {
 		currTime := float32(rl.GetTime())
