@@ -1,6 +1,8 @@
 package main
 
 import (
+	"fmt"
+
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -11,28 +13,30 @@ func main() {
 	// Canvas for the shader
 	blank := rl.GenImageColor(1024, 1024, rl.Blank)
 	texture := rl.LoadTextureFromImage(blank)
-	shader := drawShader()
+	shader := drawFlash()
 	rl.UnloadImage(blank)
 
-	// loc := rl.GetShaderLocation(shader, "aTextCoord")
+	loc := rl.GetShaderLocation(shader, "u_time")
 
-	// currTime := float32(rl.GetTime())
-	// rl.SetShaderValue(shader, loc, []float32{currTime}, rl.ShaderUniformFloat)
-	red := rl.GetShaderLocation(shader, "re")
-	green := rl.GetShaderLocation(shader, "gree")
-	blue := rl.GetShaderLocation(shader, "blu")
+	currTime := []float32{float32(rl.GetTime())}
 
-	r := float32(1.0)
-	g := float32(1.0)
-	b := float32(1.0)
+	fmt.Println(loc)
+	rl.SetShaderValue(shader, loc, currTime, rl.ShaderUniformFloat)
+	// red := rl.GetShaderLocation(shader, "re")
+	// green := rl.GetShaderLocation(shader, "gree")
+	// blue := rl.GetShaderLocation(shader, "blu")
 
-	rl.SetShaderValue(shader, red, []float32{r}, rl.ShaderUniformFloat)
-	rl.SetShaderValue(shader, green, []float32{g}, rl.ShaderUniformFloat)
-	rl.SetShaderValue(shader, blue, []float32{b}, rl.ShaderUniformFloat)
+	// r := float32(1.0)
+	// g := float32(1.0)
+	// b := float32(1.0)
+
+	// rl.SetShaderValue(shader, red, []float32{r}, rl.ShaderUniformFloat)
+	// rl.SetShaderValue(shader, green, []float32{g}, rl.ShaderUniformFloat)
+	// rl.SetShaderValue(shader, blue, []float32{b}, rl.ShaderUniformFloat)
 
 	for !rl.WindowShouldClose() {
-		// currTime := float32(rl.GetTime())
-		// rl.SetShaderValue(shader, loc, []float32{currTime}, rl.ShaderUniformFloat)
+		currTime := float32(rl.GetTime())
+		rl.SetShaderValue(shader, loc, []float32{currTime}, rl.ShaderUniformFloat)
 
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
