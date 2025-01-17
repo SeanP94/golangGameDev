@@ -1,51 +1,27 @@
 #version 330
 
+// Input vertex attributes (from vertex shader)
+in vec3 fragPosition;
+in vec2 fragTexCoord;
+//in vec4 fragColor;
+in vec3 fragNormal;
 
-varying vec2 pos;
+// Input uniform values
+uniform sampler2D texture0;
+uniform vec4 colDiffuse;
 
-// #version 330
-
+// Output fragment color
 // out vec4 finalColor;
 
-// in vec4 fragColor;
-// in vec3 fragPosition;
-// in vec3 fragNormal;
-  
-// uniform vec3 ambientColor;
-uniform  float re;
-uniform  float gree;
-uniform  float blu;
+// NOTE: Add here your custom variables
+uniform vec4 ambient;
+uniform vec3 viewPos;
 
 
 void main() {
-    gl_FragColor = vec4(re, gree, blu, 1.);
+    vec4 c1 = vec4(0.5, .1, .9, .1);
+    vec4 c2 = vec4(0.1, .8, .7, .1);
+    vec4 c  = mix(c1,c2, fragPosition.x);
+
+    gl_FragColor = c;
 }
-
-
-// #version 330
-
-// out vec4 finalColor;
-
-// in vec4 fragColor;
-// in vec3 fragPosition;
-// in vec3 fragNormal;
-  
-// uniform vec3 ambientColor;
-
-// vec3 lightPosition = vec3(0.0, 10.0, -10.0);
-// float ambientStrength = 0.01;
-
-// void main()
-// {
-//     // ambient
-//     vec3 ambient = ambientStrength * ambientColor;
-    
-//     // diffuse 
-//     vec3 norm = normalize(fragNormal);
-//     vec3 lightDir = normalize(lightPosition - fragPosition);
-//     float diff = max(dot(norm, lightDir), 0.0);
-//     vec3 diffuse = diff * ambientColor;
-            
-//     vec3 result = (ambient + diffuse) * fragColor.rgb;
-//     finalColor = vec4(result, fragColor.a);
-// } 

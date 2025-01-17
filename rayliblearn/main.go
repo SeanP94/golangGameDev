@@ -1,8 +1,6 @@
 package main
 
 import (
-	"fmt"
-
 	rl "github.com/gen2brain/raylib-go/raylib"
 )
 
@@ -16,23 +14,17 @@ func main() {
 	// Canvas for the shader
 	blank := rl.GenImageColor(1024, 1024, rl.Blank)
 	texture := rl.LoadTextureFromImage(blank)
-	shader := drawFlash()
+	shader := drawBOS()
 	rl.UnloadImage(blank)
 
-	loc := rl.GetShaderLocation(shader, "u_time")
-	loc_size := rl.GetShaderLocationAttrib(shader, "u_resolution")
-
-	currTime := []float32{float32(rl.GetTime())}
-	currSize := []float32{float32(SCREEN_WIDTH), float32(SCREEN_HEIGHT)}
-	fmt.Println(loc)
-	fmt.Println(loc_size)
-	rl.SetShaderValue(shader, loc, currTime, rl.ShaderUniformFloat)
-	rl.SetShaderValue(shader, loc_size, currSize, rl.ShaderUniformVec2)
+	if !rl.IsShaderValid(shader) {
+		println("Shader failed to compile!")
+		rl.SetTraceLogLevel(rl.LogAll)
+		return
+	}
 
 	for !rl.WindowShouldClose() {
-		currTime := float32(rl.GetTime())
-		rl.SetShaderValue(shader, loc, []float32{currTime}, rl.ShaderUniformFloat)
-
+		updateCoreShader(&shader)
 		rl.BeginDrawing()
 		rl.ClearBackground(rl.RayWhite)
 		rl.BeginShaderMode(shader)
