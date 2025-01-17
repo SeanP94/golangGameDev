@@ -2,18 +2,9 @@ package main
 
 import rl "github.com/gen2brain/raylib-go/raylib"
 
-func drawShader() rl.Shader {
-	shader := rl.LoadShader("shaders/vs.vs.glsl", "shaders/fs.fs.glsl")
-	return shader
-}
-
-func drawFlash() rl.Shader {
-	shader := rl.LoadShader("shaders/vs.vs.glsl", "shaders/basic.glsl")
-	return shader
-}
-
-func drawBOS() rl.Shader {
-	shader := rl.LoadShader("shaders/bos.vs", "shaders/bos.fs")
+func drawShader(fn string) rl.Shader {
+	file_location := "shaders/" + fn
+	shader := rl.LoadShader("", file_location)
 	return shader
 }
 
@@ -30,5 +21,5 @@ func updateCoreShader(shader *rl.Shader) {
 	rl.SetShaderValue(*shader, resolutionLoc, currSize, rl.ShaderUniformVec2)
 	mouse_loc := rl.GetShaderLocation(*shader, "u_mouse")
 	rl.SetShaderValue(*shader, time_loc, []float32{currTime}, rl.ShaderUniformFloat)
-	rl.SetShaderValue(*shader, mouse_loc, []float32{float32(rl.GetMousePosition().X), float32(rl.GetMousePosition().Y)}, rl.ShaderUniformVec2)
+	rl.SetShaderValue(*shader, mouse_loc, []float32{float32(rl.GetMousePosition().X), float32(SCREEN_WIDTH) - float32(rl.GetMousePosition().Y)}, rl.ShaderUniformVec2)
 }
