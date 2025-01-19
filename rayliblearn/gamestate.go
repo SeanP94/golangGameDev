@@ -29,7 +29,7 @@ func (gs *GameState) currentState() {
 
 }
 
-func main() {
+func testrun() {
 	lastUpdate := time.Now()
 	currState := loading
 	fmt.Println("Current Game State :: " + statename[currState])
